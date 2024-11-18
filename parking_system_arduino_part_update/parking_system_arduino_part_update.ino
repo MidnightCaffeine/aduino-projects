@@ -4,6 +4,9 @@ const int trigPin = 2;  // Ultrasonic sensor trigger pin
 const int echoPin = 3;  // Ultrasonic sensor echo pin
 const int distanceThreshold = 5; // Distance threshold in cm
 
+const int exit_trigPin = 10;  // Ultrasonic sensor trigger pin
+const int exit_echoPin = 11;  // Ultrasonic sensor echo pin
+
 Servo exit_servo;
 Servo entrance_servo;
 
@@ -58,6 +61,13 @@ void loop() {
     entrance_servo.write(0);  // Move servo to 90 degrees
 
   }
+
+  int exit_distance = exit_getDistance();
+  if (exit_distance > 0 && exit_distance <= distanceThreshold) {
+    // Object detected within threshold distance, move the servo
+    exit_servo.write(0);  // Move servo to 90 degrees
+
+  }
 }
 
 
@@ -74,4 +84,18 @@ int getDistance() {
   long duration = pulseIn(echoPin, HIGH);
   int distance = duration * 0.034 / 2;  // Convert time to distance in cm
   return distance;
+}
+
+int exit_getDistance() {
+  // Trigger ultrasonic sensor to measure distance
+  digitalWrite(exit_trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(exit_trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(exit_trigPin, LOW);
+
+  // Measure the time taken for the echo to return
+  long e_duration = pulseIn(exit_echoPin, HIGH);
+  int e_distance = e_duration * 0.034 / 2;  // Convert time to distance in cm
+  return e_distance;
 }
